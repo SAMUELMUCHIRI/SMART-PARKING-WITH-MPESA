@@ -37,9 +37,15 @@
     <div class="container">
         <div class="form-container">
             <form action="details.php" method="post" >
-                <h1><label for="Smart Parking System">Smart Parking System</label></h1>
-                <br>
-                <h3><label for="Parking Spots">Parking Spots: 4 </label></h3>
+                <h1><label for="Smart Parking System">Smart Parking System</label></h1>        
+                <?php
+                echo "<p><h3><span style=\"color: #4fb542;\">SYSTEM ONLINE</span> </h3></p>";
+                //echo "<br>";
+                echo "<h3>Parking Spots: 4 </h3>";
+                
+                ?>
+                
+                
                 <br>
                 <label for="parking_number">Parking Number:</label>
                 <input type="text" name="parking_number" value=" " required><br>

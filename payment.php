@@ -31,7 +31,7 @@
                 echo "<p>Payment Successful , $name!</p>";
                  }
         ?>
-        <a href="index.html">Back to the form</a>
+        <a href="index.php">Back to the form</a>
 
 </div>
     

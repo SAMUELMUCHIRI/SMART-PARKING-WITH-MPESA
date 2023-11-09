@@ -56,7 +56,18 @@
             <h3>Billing Page</h3>
             <?php
             echo "Parking Number: $parkingNumber<br>";
-            echo "Exit time is ".date('H:i , F Y').' ';
+            //$entryTime=date_create_from_format('H:i:s ,d-m-Y','10:59:23 ,09-11-2023');
+            $exitTime=date('H:i:s ,d-m-Y'); 
+            echo "Entry time is   "; 
+            echo  $entryTime;
+
+            echo '<br>';            
+                      
+            echo "Exit time is ". $exitTime.' ';
+            echo '<br>';            
+            
+           //echo "Total Time Spent :". $exitTime-$entryTime. '';
+            
           
              // Add a "Go Back" button to return to the form
             ?>
