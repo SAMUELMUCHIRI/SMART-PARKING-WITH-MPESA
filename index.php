@@ -40,6 +40,17 @@
                 <h1><label for="Smart Parking System">Smart Parking System</label></h1>        
                 <?php
                 echo "<p><h3><span style=\"color: #4fb542;\">SYSTEM ONLINE</span> </h3></p>";
+                $host="localhost";
+                $dbname="smart_parking";
+                $username="root";
+                $password= "";
+                $conn=mysqli_connect(hostname: $host,
+                                     username: $username,    
+                                     password: $password , 
+                                     database: $dbname);
+                if(mysqli_connect_errno()){
+                    die("Connection Error". mysqli_connect_error());}
+                echo"Database Online";
                 //echo "<br>";
                 echo "<h3>Parking Spots: 4 </h3>";
                 

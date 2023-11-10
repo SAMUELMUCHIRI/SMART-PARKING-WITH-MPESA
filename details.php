@@ -55,16 +55,82 @@
             <br>
             <h3>Billing Page</h3>
             <?php
+            $host="localhost";
+            $dbname="smart_parking";
+            $username="root";
+            $password= "";
+            $conn=mysqli_connect(hostname: $host,
+                                    username: $username,    
+                                    password: $password , 
+                                    database: $dbname);
+            if(mysqli_connect_errno()){
+                die("Connection Error". mysqli_connect_error());}
+            //echo"Database Online";
+
+            $query = "select Time_In FROM Parking_Details WHERE Parking_Number =" .$parkingNumber .";";
+            $result = $conn->query( $query );
+            $timedb =$result->fetch_assoc();
+
+
             echo "Parking Number: $parkingNumber<br>";
-            //$entryTime=date_create_from_format('H:i:s ,d-m-Y','10:59:23 ,09-11-2023');
-            $exitTime=date('H:i:s ,d-m-Y'); 
+       
             echo "Entry time is   "; 
-            echo  $entryTime;
+            echo  stripslashes($timedb['Time_In']);
 
             echo '<br>';            
-                      
-            echo "Exit time is ". $exitTime.' ';
+            $query1 = "select Time_Out FROM Parking_Details WHERE Parking_Number =" .$parkingNumber .";";
+            $result1 = $conn->query( $query1 );
+            $timeoutdb =$result1->fetch_assoc();
+            echo "Exit time is ". stripslashes($timeoutdb['Time_Out']).' ';
             echo '<br>';            
+            $query2 = "select TIMEDIFF(Time_Out ,Time_In) AS time_difference FROM Parking_Details WHERE Parking_Number =" .$parkingNumber .";";
+            $result2 = $conn->query( $query2 );
+            //$timespentdb =$result2->fetch_assoc();
+
+            if ($result2->num_rows > 0) {
+                // Output data of each row
+                while($row = $result2->fetch_assoc()) {
+                    echo "Time Difference: " . $row["time_difference"] . "<br>";
+                }
+            } else {
+                echo "0 results";
+            }
+
+            echo "<br>";
+            $query3 = "select TIMESTAMPDIFF(SECOND, Time_In ,Time_Out) AS time_difference_seconds FROM Parking_Details WHERE Parking_Number =" .$parkingNumber .";";
+            $result3 = $conn->query( $query3 );
+            //$timespentdb =$result2->fetch_assoc();
+
+            
+            if ($result3->num_rows > 0) {
+                // Output data of each row
+                while($row1 = $result3->fetch_assoc()) {
+                    //echo "Time Difference in Seconds: " . $row1["time_difference_seconds"] . "<br>";
+                    //start
+                    $query4 = "select Time_DurationStart FROM charging_rates;";
+                    $query5 = "select Charge FROM charging_rates;";
+                    $result4 = $conn->query( $query4 );
+                    $result5 = $conn->query( $query5 );
+                    //$timespentdb =$result2->fetch_assoc();
+        
+                    $timeref =$result4->fetch_assoc();
+                    $timecharge =$result5->fetch_assoc();
+                    //echo " time ref is ". stripslashes($timeref['Time_DurationStart']).' ';
+                    //echo '<br>';
+                    //echo " time Charge is ". stripslashes($timecharge['Charge']).' ';
+                    $fee=($row1["time_difference_seconds"]/stripslashes($timeref['Time_DurationStart']))*stripslashes($timecharge['Charge']);
+                    //echo '<br>';
+                    echo "KSH ".round($fee);
+                    
+                    //end
+                    
+                }
+            } else {
+                echo "0 results";
+            }
+            
+            
+            //echo "Time Spent :".($timespentdb("time_difference")).' ';
             
            //echo "Total Time Spent :". $exitTime-$entryTime. '';
             
