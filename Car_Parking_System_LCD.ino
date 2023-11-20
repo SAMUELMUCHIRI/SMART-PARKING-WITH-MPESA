@@ -1,110 +1,241 @@
-#include <LiquidCrystal_I2C.h>
-#include <Servo.h> //includes the servo library
+#include <Servo.h>
 #include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
 
-LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
-Servo myservo;
 
-#define ir_enter 2
-#define ir_back  4
+// Set WiFi credentials
+const char* ssid = "Ivannah";
+const char* password = "Petcol0049";
+const char* serverIP = "192.168.0.111";  // Replace with your server's IP address
+const int serverPort = 80;
+Servo myservo; 
+// REPLACE with your Domain name and URL path or IP address with path
+const char* serverName = "http://192.168.0.111/TEST/index.php";
 
-#define ir_car1 5
-#define ir_car2 6
-#define ir_car3 7
-#define ir_car4 8
 
-int S1=0, S2=0, S3=0, S4=0;
-int flag1=0, flag2=0; 
-int slots = 4;  
+// Set the LCD address to 0x3F for a 20 chars and 4 line display
 
-void setup(){
-Serial.begin(9600);
+LiquidCrystal_I2C lcd(0x3F, 20, 4);
+int I2C_SDA=3;
+int I2C_SCL=1;
 
-pinMode(ir_car1, INPUT);
-pinMode(ir_car2, INPUT);
-pinMode(ir_car3, INPUT);
-pinMode(ir_car4, INPUT);
 
-pinMode(ir_enter, INPUT);
-pinMode(ir_back, INPUT);
+// create servo object to control a servo
+// Define the pin number for the IR sensor
+const int EntryPin = 0;
+const int ExitPin = 5;
+const int irSensorPin1 = 2;
+const int irSensorPin2 = 12;
+const int irSensorPin3 = 13;
+const int irSensorPin4 = 14;
+String sendval1, sendval2, sendval3, sendval4 ,postData;
+
+void setup() {
   
-myservo.attach(3);
-myservo.write(90);
+  //Serial.begin(115200);
+  Wire.begin(I2C_SDA, I2C_SCL);
+  // Begin WiFi
+  
+  lcd.init();  
+  // Turn on the backlight (if available)
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print(" SMART PARKING ");
+  delay(500);
 
-lcd.begin(20, 4);  
-lcd.setCursor (0,1);
-lcd.print("    Car  parking  ");
-lcd.setCursor (0,2);
-lcd.print("       System     ");
-delay (2000);
-lcd.clear();   
+  pinMode(EntryPin, INPUT);
+  pinMode(ExitPin, INPUT);
+  pinMode(irSensorPin1, INPUT);
+  pinMode(irSensorPin2, INPUT);
+  pinMode(irSensorPin3, INPUT);
+  pinMode(irSensorPin4, INPUT);
+  myservo.attach(4);  // attaches the servo on pin 4
+  lcd.clear();
+  //configure the mode
+  /*
+  WiFi.mode(WIFI_AP);
+//name for the access point and 8 character password
+  WiFi.softAP("ESP001", "<1-to-9>");
+  lcd.setCursor( 0 ,0);
+  lcd.print("Wifi : ESP001");
+  lcd.setCursor(0, 1);
+  lcd.print("Password : <1-to-9>");
+  delay(2500);
+      while (WiFi.softAPgetStationNum() !=1){ //loop here while no AP is connected to this station
+      //Serial.print(".");
+      delay(100);                           
+      }
+  delay(500);
+  
+  lcd.clear();
+*/
 
-Read_Sensor();
-
-int total = S1+S2+S3+S4;
-slots = slots-total; 
-}
-
-void loop(){
-
-Read_Sensor();/*calculations of total and slots*/
-
-lcd.setCursor (0,0);
-lcd.print(" Available Slots: "); 
-lcd.print(slots);
-
-lcd.setCursor (0,1);
-if(S1==1){lcd.print("S1:Full   ");}
-     else{lcd.print("S1:Empty");}
-
-lcd.setCursor (10,1);
-if(S2==1){lcd.print("S2:Full ");}
-     else{lcd.print("S2:Empty");}
-
-lcd.setCursor (0,2);
-if(S3==1){lcd.print("S3:Full ");}
-     else{lcd.print("S3:Empty");}
-
-lcd.setCursor (10,2);
-if(S4==1){lcd.print("S4:Full ");}
-     else{lcd.print("S4:Empty");}   
-
-if(digitalRead (ir_enter) == 0 && flag1==0){
-if(slots>0){flag1=1;
-if(flag2==0){myservo.write(180); slots = slots-1;}
-}else{
-  while(digitalRead(ir_enter) == 0 && slots <= 0){
-    lcd.clear();
-    lcd.setCursor (0,1);
-    lcd.print("Sorry Parking Full");  
-    delay(1500);
-    digitalRead(ir_enter);
+      // Connecting to WiFi...
+  
+  WiFi.begin(ssid, password);
+  lcd.setCursor(0, 0);
+  lcd.print("Connecting to ");
+  lcd.setCursor(0, 2);
+  lcd.print(ssid);
+    // Loop continuously while WiFi is not connected
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(100);
+    lcd.setCursor(0 ,3);
+    lcd.print("scanning.....");
   }
-}   
+  delay(200);
+  lcd.clear();
+  // Connected to WiFi
+  //Serial.println();
+
+    lcd.setCursor(0, 3);
+  lcd.print(WiFi.localIP());
+    lcd.setCursor(0, 1);
+  lcd.print("Connected!  ");
+  delay(250);
+  lcd.clear();
+  
+
+
+ 
+ }
+ void sendSensorValues() {
+  WiFiClient client;
+
+  if (!client.connect(serverIP, serverPort)) {
+    Serial.println("Connection failed");
+    delay(5000);
+    return;
+  }
+
+  Serial.println("Connected to server");
+  int sensorValue1 = digitalRead(EntryPin);
+  int sensorValue2 = digitalRead(ExitPin);
+  int sensorValue3 = digitalRead(irSensorPin1);
+  int sensorValue4 = digitalRead(irSensorPin2);
+  int sensorValue5 = digitalRead(irSensorPin3);
+  int sensorValue6 = digitalRead(irSensorPin4);
+  int AvailableParking=sensorValue3+sensorValue4+sensorValue5+sensorValue6;
+
+  String postData = "sendval1=" + String(sensorValue3) +
+                    "&sendval2=" + String(sensorValue4) +
+                    "&sendval3=" + String(sensorValue5) +
+                    "&sendval4=" + String(sensorValue6);
+
+  client.println("POST /index.php HTTP/1.1");
+  client.print("Host: ");
+  client.println(serverIP);
+  client.println("Content-Type: application/x-www-form-urlencoded");
+  client.print("Content-Length: ");
+  client.println(postData.length());
+  client.println("Connection: close");
+  client.println();
+  client.println(postData);
+  if (AvailableParking > 0) 
+{
+  //lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print("                  ");
+  lcd.setCursor(3, 0);
+  lcd.print("park space");
+  lcd.setCursor(16, 0);
+  lcd.print(AvailableParking);
+  lcd.setCursor(0, 2);
+  lcd.print(" 1     2    3    4");
+  if (sensorValue3==0)
+  {
+    lcd.setCursor(0, 3);
+    lcd.print("FULL");
+  } else
+  {
+    lcd.setCursor(0, 3);
+    lcd.print("EMTY");
+  }
+    if (sensorValue4==0)
+  {
+    lcd.setCursor(5, 3);
+    lcd.print("FULL");
+  } else
+  {
+    lcd.setCursor(5, 3);
+    lcd.print("EMTY");
+  }
+    if (sensorValue5==0)
+  {
+    lcd.setCursor(10, 3);
+    lcd.print("FULL");
+  } else
+  {
+    lcd.setCursor(10, 3);
+    lcd.print("EMTY");
+  }
+    if (sensorValue6==0)
+  {
+    lcd.setCursor(16, 3);
+    lcd.print("FULL");
+  } else
+  {
+    lcd.setCursor(16, 3);
+    lcd.print("EMTY");
+  }
+
+  if ((sensorValue1 == 0) ^ (sensorValue2 == 0))
+  {
+   OpenBarrier();
+  } 
+
+}else 
+{
+  lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print("  Parking  Full  ");
+
+  if (sensorValue2 == 0)
+  {
+    OpenBarrier();  
+  }
+  //delay(300);
+  //lcd.setCursor(0, 0);
+  //lcd.clear();
+
 }
 
-if(digitalRead (ir_back) == 0 && flag2==0){flag2=1;
-if(flag1==0){myservo.write(180); slots = slots+1;}
-}
+  
 
-if(flag1==1 && flag2==1){
-delay (1000);
-myservo.write(90);
-flag1=0, flag2=0;
-}
-
-delay(1);
-}
-
-void Read_Sensor(){
-S1=0, S2=0, S3=0, S4=0;
-
-if(digitalRead(ir_car1) == 0){S1=1;}
-if(digitalRead(ir_car2) == 0){S2=1;}
-if(digitalRead(ir_car3) == 0){S3=1;}
-if(digitalRead(ir_car4) == 0){S4=1;} 
+  while (client.available()) {
+    String line = client.readStringUntil('\n');
+    Serial.println(line); // Print each line of the server response
+  }
+  
+  client.stop();
 }
 
 
+void loop() 
+{
+sendSensorValues();
+  
+}
 
+void OpenBarrier()
+{
+  for (int i = 40; i < 180; i++) 
+  {
+  myservo.write(i); 
+  delay(30);                 
+  }
+  delay(100);
+  
+  for (int i = 179; i > 40 ; i--) 
+  {
+  myservo.write(i); 
+  delay(30);                 
+  }
+
+  delay(30);
+}
