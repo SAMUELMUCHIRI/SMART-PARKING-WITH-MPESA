@@ -6,18 +6,15 @@
 #include <WiFiClient.h>
 
 
-// Set WiFi credentials
-#define WIFI_SSID "Ivannah"
-#define WIFI_PASS "Petcol0049"
-const char* serverAddress = " 0.0.0.0"; // Use your computer's local IP address
-const int serverPort = 80; // Port of your local server (usually 80 for HTTP)
 
-const char* host="192.168.0.111";//LOCAL IPv4 ADDRESS...ON CMD WINDOW TYPE ipconfig/all
-const uint16_t port=80;//PORT OF THE LOCAL SERVER
- WiFiClient client;
+// Set WiFi credentials
+const char* ssid = "Ivannah";
+const char* password = "Petcol0049";
+const char* serverIP = "192.168.0.111";  // Replace with your server's IP address
+const int serverPort = 80;
 Servo myservo; 
 // REPLACE with your Domain name and URL path or IP address with path
-const char* serverName = "http://192.168.0.116/TEST/index.php";
+const char* serverName = "http://192.168.0.111/TEST/index.php";
 
 
 // Set the LCD address to 0x3F for a 20 chars and 4 line display
@@ -79,11 +76,11 @@ void setup() {
 
       // Connecting to WiFi...
   
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  WiFi.begin(ssid, password);
   lcd.setCursor(0, 0);
   lcd.print("Connecting to ");
   lcd.setCursor(0, 2);
-  lcd.print(WIFI_SSID);
+  lcd.print(ssid);
     // Loop continuously while WiFi is not connected
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -100,45 +97,34 @@ void setup() {
   lcd.print(WiFi.localIP());
     lcd.setCursor(0, 1);
   lcd.print("Connected!  ");
-  delay(2500);
+  delay(250);
   lcd.clear();
-  //server response
   
-  // Perform HTTP GET request
+
 
  
-
-  HTTPClient http;
-  String dataToSend = "HelloFromNodeMCU";
-  String url = "http://" + String(serverAddress) + "/TEST/index.php?data=" + dataToSend;
-  http.begin(client ,url);
-
-  int httpResponseCode = http.GET();
-  if (httpResponseCode > 0) {
-    //Serial.print("HTTP Response code: ");
-    //Serial.println(httpResponseCode);
-    String payload = http.getString();
-    //Serial.println("Response payload: " + payload);
-  } else {
-    //Serial.print("Error in HTTP request: ");
-    //Serial.println(httpResponseCode);
-  }
-  http.end();
-
-
-
-
-
-  delay(1500);
-  lcd.clear();
  }
-     
-  //delay(1000);
+ void sendSensorValues() {
+  WiFiClient client;
 
+  if (!client.connect(serverIP, serverPort)) {
+    lcd.clear();
+    lcd.setCursor(0 , 1);
+    lcd.print("NO LOCALHOST");
+    //Serial.println("Connection failed");
+    lcd.setCursor(5 , 2);
+    lcd.print("WRONG SERVERIP");
+    lcd.setCursor(3 , 3);
+    lcd.print(serverIP);
+    delay(1000);
+    lcd.setCursor(0 , 1);
+    lcd.clear();
 
-void loop() {
-  // Read and print the value from the IR sensor
- int sensorValue1 = digitalRead(EntryPin);
+    return;
+  }
+
+  Serial.println("Connected to server");
+  int sensorValue1 = digitalRead(EntryPin);
   int sensorValue2 = digitalRead(ExitPin);
   int sensorValue3 = digitalRead(irSensorPin1);
   int sensorValue4 = digitalRead(irSensorPin2);
@@ -146,124 +132,119 @@ void loop() {
   int sensorValue6 = digitalRead(irSensorPin4);
   int AvailableParking=sensorValue3+sensorValue4+sensorValue5+sensorValue6;
 
-  //server stuff
-  HTTPClient http;    // http object of clas HTTPClient
-  // Convert to float
-  sendval1 = float(sensorValue3);
-  sendval2 = float(sensorValue4); 
-  sendval3 = float(sensorValue5); 
-  sendval4 = float(sensorValue6); 
-  String PROJECT_API_KEY= "hello world";
-        
+  String postData = "sendval1=" + String(sensorValue3) +
+                    "&sendval2=" + String(sensorValue4) +
+                    "&sendval3=" + String(sensorValue5) +
+                    "&sendval4=" + String(sensorValue6);
 
-  postData="api_key"+PROJECT_API_KEY;
-  postData+="&sendval=" + String(sensorValue3);
-  postData+="&sendval2=" + String(sensorValue4);
-  postData+="&sendval3=" + String(sensorValue5);
-  postData+="&sendval4=" + String(sensorValue6);
-
-  //TestData ="api_key=" String(PROJECT_API_KEY) + "&sendval=" + String(sensorValue3) + "&sendval2=" + String(sensorValue4) + "&sendval3=" + String(sensorValue5) + "&sendval4=" + String(sensorValue6);
-  // We can post values to PHP files as  example.com/dbwrite.php?name1=val1&name2=val2
-  // Hence created variable postData and stored our variables in it in desired format
-  // Update Host URL here:-
-/*
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-     //tring serverPath = serverName + "?temperature=24.37";
-      String AserverPath="http://192.168.0.116/TEST/index.php";
-      // Your Domain name with URL path or IP address with path
-      http.begin(client, "http://192.168.0.116:80/test/index.php" );
-    //http.begin(client , ); // Replace with your PHP script URL
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    // Prepare data to send
-
-
-    int httpResponseCode = http.POST(postData);
-    if (httpResponseCode == 200) {
-      String response = http.getString();
-      //lcd.print("HTTP Response code: " + String(httpResponseCode));
-      delay(30);
-      lcd.clear();
-      lcd.setCursor(0, 3);
-      lcd.print("POST SUCCESS");
-      delay(50);
-      lcd.clear();
-    } else {
-      lcd.setCursor(0, 3);
-      lcd.print("Error POST FAIL");
-      delay(50);
-      lcd.clear();
-    }
-
-    http.end();
-  }
-*/
-//server end
-  if (AvailableParking > 0) {
-    lcd.setCursor(0, 0);
-  lcd.print("parking space  = ");
-     lcd.setCursor(0, 1);
+  client.println("POST /index.php HTTP/1.1");
+  client.print("Host: ");
+  client.println(serverIP);
+  client.println("Content-Type: application/x-www-form-urlencoded");
+  client.print("Content-Length: ");
+  client.println(postData.length());
+  client.println("Connection: close");
+  client.println();
+  client.println(postData);
+  if (AvailableParking > 0) 
+{
+  //lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print("                  ");
+  lcd.setCursor(3, 0);
+  lcd.print("park space");
+  lcd.setCursor(16, 0);
   lcd.print(AvailableParking);
+  lcd.setCursor(0, 2);
+  lcd.print(" 1     2    3    4");
+  if (sensorValue3==0)
+  {
+    lcd.setCursor(0, 3);
+    lcd.print("FULL");
+  } else
+  {
+    lcd.setCursor(0, 3);
+    lcd.print("EMTY");
+  }
+    if (sensorValue4==0)
+  {
+    lcd.setCursor(5, 3);
+    lcd.print("FULL");
+  } else
+  {
+    lcd.setCursor(5, 3);
+    lcd.print("EMTY");
+  }
+    if (sensorValue5==0)
+  {
+    lcd.setCursor(10, 3);
+    lcd.print("FULL");
+  } else
+  {
+    lcd.setCursor(10, 3);
+    lcd.print("EMTY");
+  }
+    if (sensorValue6==0)
+  {
+    lcd.setCursor(16, 3);
+    lcd.print("FULL");
+  } else
+  {
+    lcd.setCursor(16, 3);
+    lcd.print("EMTY");
+  }
 
-  /*Serial.print("The parking space available  :");
-  Serial.println(AvailableParking);*/
-  if ((sensorValue1 == 0) ^ (sensorValue2 == 0)){
+  if ((sensorValue1 == 0) ^ (sensorValue2 == 0))
+  {
    OpenBarrier();
   } 
 
- }else {
-  // Code for high sensor value
-   
-     lcd.setCursor(0, 0);
-  lcd.print("parking  Full");
-   lcd.setCursor(0, 1);
-  lcd.print(".");
-  
-  /*Serial.println("Parking space full");*/
-   if (sensorValue2 == 0){
-    OpenBarrier();
-  
-  
-}
-  
+}else 
+{
+  lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print("  Parking  Full  ");
 
-  delay(3000);
- }
-  //delay(1000); // Adjust delay as needed
-}
-void sendDataToServer() {
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    http.begin(client , "http://192.168.0.111/test/index.php"); // Replace with your PHP script URL
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    // Prepare data to send
-    String data = "sensor_value=100"; // Replace with your sensor value
-
-    int httpResponseCode = http.POST(data);
-    if (httpResponseCode > 0) {
-      String response = http.getString();
-      Serial.println("HTTP Response code: " + String(httpResponseCode));
-      Serial.println("Server response: " + response);
-    } else {
-      Serial.println("Error sending POST request");
-    }
-
-    http.end();
+  if (sensorValue2 == 0)
+  {
+    OpenBarrier();  
   }
+  //delay(300);
+  //lcd.setCursor(0, 0);
+  //lcd.clear();
+
 }
-void OpenBarrier(){
-  //myservo.write(10);
-    for (int i = 40; i < 180; i++) {
-    myservo.write(i); 
-    delay(30);                 
-  }
-  delay(150);
+
   
-    for (int i = 179; i > 40 ; i--) {
-    myservo.write(i); 
-    delay(30);                 
+
+  while (client.available()) {
+    String line = client.readStringUntil('\n');
+    Serial.println(line); // Print each line of the server response
+  }
+  
+  client.stop();
+}
+
+
+void loop() 
+{
+sendSensorValues();
+  
+}
+
+void OpenBarrier()
+{
+  for (int i = 40; i < 180; i++) 
+  {
+  myservo.write(i); 
+  delay(30);                 
+  }
+  delay(100);
+  
+  for (int i = 179; i > 40 ; i--) 
+  {
+  myservo.write(i); 
+  delay(30);                 
   }
 
   delay(30);

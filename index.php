@@ -61,7 +61,7 @@
                       'sendval3' => $_POST['sendval3'],
                       'sendval4' => $_POST['sendval4']
                     );
-                  
+                    
                     $jsonContent = json_encode($data, JSON_PRETTY_PRINT);
                     $logFile = "data_log.txt";
                     file_put_contents($logFile, $jsonContent);
@@ -69,6 +69,7 @@
                     echo "Values uploaded successfully to data_log.txt";
                   } else {
                     //echo "Invalid request method";
+                    
                   
                     // Read the data_log.txt file and display the latest values
                     $fileContent = file_get_contents("data_log.txt");
