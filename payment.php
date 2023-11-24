@@ -25,9 +25,16 @@
     <div class="code-container">
 
         <?php
+        //include 'C:\xampp\htdocs\test\accessToken.php';
+        include 'C:\xampp\htdocs\stkpush.php';
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                $name = $_POST["PhoneNumber"];
-                //$email = $_POST["email"];
+                $PhoneNo = $_POST["PhoneNumber"];
+                //$email = $_POST["email"]
+                echo $ResponseCode ;
+
+
+
+
                 echo "<p>Payment Successful , $name!</p>";
                  }
         ?>

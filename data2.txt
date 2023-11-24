@@ -1,0 +1,5 @@
+{
+    "ParkingNumber": " 1",
+    "PhoneNo": " 0792207776",
+    "Fee": "80"
+}

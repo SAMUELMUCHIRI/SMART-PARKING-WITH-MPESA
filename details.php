@@ -25,20 +25,20 @@
     <div class="code-container">
     <?php
     // Function to calculate the parking fee based on time
-    function chkEntryTime() {
-        $entryTime ="";
-    }
+  
 
-    function getParknumber() {
-        
-    }
 
     $parkingNumber = $entryTime = $exitTime = $totalFee = "";
 
     // Check if the form is submitted
     if (isset($_POST['submit'])) {
         $parkingNumber = $_POST['parking_number'];
+        $PhoneNo = $_POST["PhoneNumber"];
 
+                // File 1: sending.php
+        //$variableToSend = "Hello";
+       // $encodedVar = urlencode($PhoneNo); 
+       
 
         // Validate input (you may want to add more validation)
         if (empty($parkingNumber) ) {
@@ -47,7 +47,7 @@
             echo " ";
             //$totalFee = round(calculateParkingFee($entryTime, $exitTime, $ratePerHour));
 
-
+            
             // Display the results and hide the form
             echo '<div class="result">';
             ?>
@@ -66,9 +66,12 @@
             if(mysqli_connect_errno()){
                 die("Connection Error". mysqli_connect_error());}
             //echo"Database Online";
-
+            
+            
             $query = "select Time_In FROM Parking_Details WHERE Parking_Number =" .$parkingNumber .";";
             $result = $conn->query( $query );
+      
+            
             $timedb =$result->fetch_assoc();
 
 
@@ -120,8 +123,21 @@
                     //echo " time Charge is ". stripslashes($timecharge['Charge']).' ';
                     $fee=($row1["time_difference_seconds"]/stripslashes($timeref['Time_DurationStart']))*stripslashes($timecharge['Charge']);
                     //echo '<br>';
-                    echo "KSH ".round($fee);
-                    
+                    echo "Parking Fee  : KSH ".round($fee) ."";
+                    $vp=strval(round($fee));
+                    $Pquery="update parking_details SET Fee = ".$vp." WHERE Parking_Number= ".$parkingNumber .";";
+                    $resultPquery = $conn->query( $Pquery );
+                    $data1 = array(
+                        'ParkingNumber' => $parkingNumber,
+                        'PhoneNo' => $PhoneNo,
+                        'Fee' => $vp                    
+                      );
+                    $jsonContent = json_encode($data1, JSON_PRETTY_PRINT);
+                    $logFile = "data2.txt";
+                    file_put_contents($logFile, $jsonContent);
+                  
+                                       
+                   
                     //end
                     
                 }
@@ -137,13 +153,15 @@
           
              // Add a "Go Back" button to return to the form
             ?>
-             <form action="payment.php" method="post" >
-              
+             <form action="stkpush.php" method="post" >
+             
+             <input type="hidden" name="data" value="<?php echo $PhoneNo; ?>">
+          
 
-              <label for="PhoneNumber1 ">Please Enter Your Phone Number :</label>
-              <input type="text" name="PhoneNumber" value=" " required><br>
-
+          
               <input type="submit" name="submit" value=" Lipa na Mpesa ">
+              
+             
     
           
               

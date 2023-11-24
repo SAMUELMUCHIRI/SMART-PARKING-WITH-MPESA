@@ -61,7 +61,7 @@
                       'sendval3' => $_POST['sendval3'],
                       'sendval4' => $_POST['sendval4']
                     );
-                    
+                  
                     $jsonContent = json_encode($data, JSON_PRETTY_PRINT);
                     $logFile = "data_log.txt";
                     file_put_contents($logFile, $jsonContent);
@@ -69,7 +69,6 @@
                     echo "Values uploaded successfully to data_log.txt";
                   } else {
                     //echo "Invalid request method";
-                    
                   
                     // Read the data_log.txt file and display the latest values
                     $fileContent = file_get_contents("data_log.txt");
@@ -101,7 +100,7 @@
                       echo "<br>Unable to read data_log.txt";
                     }
                   }
-                  echo '<meta http-equiv="refresh" content="4">';
+                  echo '<meta http-equiv="refresh" content="10">';
      
                 echo "<br>";
                 
@@ -137,6 +136,10 @@
                 <br>
                 <label for="parking_number">Parking Number:</label>
                 <input type="text" name="parking_number" value=" " required><br>
+                 
+              <label for="PhoneNumber1 ">Phone Number :</label>
+              <input type="text" name="PhoneNumber" value=" " required><br>
+
 
         
 
