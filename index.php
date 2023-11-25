@@ -41,6 +41,7 @@
                 <?php
                 echo "<p><h3><span style=\"color: #4fb542;\">SYSTEM ONLINE</span> </h3></p>";
                 //define("PROJECT_API_KEY","hello world");
+                date_default_timezone_set('Africa/Nairobi');
                 $host="localhost";
                 $dbname="smart_parking";
                 $username="root";
@@ -53,7 +54,18 @@
                     die("Connection Error". mysqli_connect_error());}
                 echo"Database Online";
                 echo "<br>";
-
+                $query11 = "select IR1 FROM system_status ;";
+                $query22 = "select IR2 FROM system_status ;";
+                $query33 = "select IR3 FROM system_status ;";
+                $query44 = "select IR4 FROM system_status ;";
+                $result11 = $conn->query( $query11 );
+                $result22 = $conn->query( $query22 );
+                $result33 = $conn->query( $query33 );
+                $result44 = $conn->query( $query44 );
+                $slot11 =$result11->fetch_assoc();
+                $slot22 =$result22->fetch_assoc();
+                $slot33 =$result33->fetch_assoc();
+                $slot44 =$result44->fetch_assoc();
                 if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $data = array(
                       'sendval1' => $_POST['sendval1'],
@@ -118,13 +130,100 @@
                 $slot4 =$result4->fetch_assoc();
                 echo "PARKING";
                 echo "<br>";
-                if(stripslashes($slot1['IR1'])== 0){echo" SLOT 1 : FULL"; }else{echo"SLOT 1 :EMPTY";}
+                
+                if(stripslashes($slot1['IR1'])== 0){
+                    echo" SLOT 1 : FULL";
+                    if((stripslashes($slot11['IR1'])== 1) and ($IR1==0)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                        $current_date_time=strval($date_time);
+                        $query5="UPDATE parking_details SET Time_In = '$current_date_time'  WHERE Parking_Number =1";
+                        $conn->query($query5);
+
+                    }else{
+                 
+                    }
+                    
+                }else{
+                    echo"SLOT 1 :EMPTY";
+                    if((stripslashes($slot11['IR1'])== 0) and ($IR1==1)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                        $current_date_time=strval($date_time);
+                        $query5="UPDATE parking_details SET Time_Out = '$current_date_time' WHERE Parking_Number =1";
+                        $conn->query($query5);
+                    } else{
+                   }}
                 echo "<br>";
-                if(stripslashes($slot2['IR2'])== 0){echo" SLOT 2 : FULL"; }else{echo"SLOT 2 :EMPTY";}
+                if(stripslashes($slot2['IR2'])== 0){
+                    echo" SLOT 2 : FULL";
+                    if((stripslashes($slot22['IR2'])== 1) and ($IR2==0)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                    $current_date_time=strval($date_time);
+                    $query6="UPDATE parking_details SET Time_In ='$current_date_time' WHERE Parking_Number =2 ";
+                    $conn->query($query6);
+
+                    }else{
+                    }
+                 }else{
+                    echo"SLOT 2 :EMPTY";
+                    if((stripslashes($slot22['IR2'])== 0) and ($IR2==1)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                        $current_date_time=strval($date_time);
+                        $query6="UPDATE parking_details SET Time_Out ='$current_date_time' WHERE Parking_Number =2 ";
+                        $conn->query($query6);
+
+                    } else{
+                  }
+                }
                 echo "<br>";
-                if(stripslashes($slot3['IR3'])== 0){echo" SLOT 3 : FULL"; }else{echo"SLOT 3 :EMPTY";}
+                if(stripslashes($slot3['IR3'])== 0){
+                    echo" SLOT 3 : FULL";
+                    if((stripslashes($slot33['IR3'])== 1) and ($IR3==0)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                        $current_date_time=strval($date_time);
+                        $query7="UPDATE parking_details SET Time_In ='$current_date_time' WHERE Parking_Number =3 ";
+                        $conn->query($query7);
+
+                    }else{
+              
+                    }
+                 }else{
+                    echo"SLOT 3 :EMPTY";
+                    if((stripslashes($slot33['IR3'])== 0) and ($IR3==1)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                        $current_date_time=strval($date_time);
+                        $query7="UPDATE parking_details SET Time_Out ='$current_date_time' WHERE Parking_Number =3";
+                        $conn->query($query7);
+
+                    } else{
+                  
+                    }
+                }
                 echo "<br>";
-                if(stripslashes($slot4['IR4'])== 0){echo" SLOT 4 : FULL"; }else{echo"SLOT 4 :EMPTY";}
+                if(stripslashes($slot4['IR4'])== 0){
+                    echo" SLOT 4 : FULL";
+                    if((stripslashes($slot44['IR4'])== 1) and ($IR4==0)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                        $current_date_time=strval($date_time);
+                        $query8="UPDATE parking_details SET Time_In ='$current_date_time' WHERE Parking_Number = 4";
+                        $conn->query($query8);
+
+                    }else{
+         
+                    }
+                    
+                 }else{
+                    
+                    echo"SLOT 4 :EMPTY";
+                    if((stripslashes($slot44['IR4'])== 0) and ($IR4==1)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                        $current_date_time=strval($date_time);
+                            $query8="UPDATE parking_details SET Time_Out ='$current_date_time' WHERE Parking_Number = 4";
+                            $conn->query($query8);
+
+                    } else{
+                 
+                    }}
+                
         
           
 
