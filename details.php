@@ -41,8 +41,8 @@
        
 
         // Validate input (you may want to add more validation)
-        if (empty($parkingNumber) ) {
-            echo "Please fill in all fields.";
+        if (empty($parkingNumber) and empty($PhoneNo)) {
+            echo "Please fill  fields.";
         } else {
             echo " ";
             //$totalFee = round(calculateParkingFee($entryTime, $exitTime, $ratePerHour));
@@ -94,6 +94,9 @@
                 // Output data of each row
                 while($row = $result2->fetch_assoc()) {
                     echo "Time Difference: " . $row["time_difference"] . "<br>";
+                    $Timestore=$row["time_difference"];
+                    $Tquery="update parking_details SET Time_Spent='$Timestore' ,Payment_Status = 'PENDING' WHERE Parking_Number= ".$parkingNumber .";";
+                    $result10 = $conn->query( $Tquery );
                 }
             } else {
                 echo "0 results";
@@ -125,7 +128,8 @@
                     //echo '<br>';
                     echo "Parking Fee  : KSH ".round($fee) ."";
                     $vp=strval(round($fee));
-                    $Pquery="update parking_details SET Fee = ".$vp." WHERE Parking_Number= ".$parkingNumber .";";
+
+                    $Pquery="update parking_details SET Fee = ".$vp."  WHERE Parking_Number= ".$parkingNumber .";";
                     $resultPquery = $conn->query( $Pquery );
                     $data1 = array(
                         'ParkingNumber' => $parkingNumber,
@@ -172,7 +176,7 @@
             
   
         }
-    }
+    } else{}
     ?>
     
     </div>

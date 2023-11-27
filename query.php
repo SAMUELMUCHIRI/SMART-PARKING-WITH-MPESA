@@ -48,6 +48,7 @@ if ($fileContent !== false) {
     $PhoneNo=$decodedData['PhoneNo'];
     $CheckoutRequestID=$decodedData['CheckoutRequestID'];
 include 'C:\xampp\htdocs\test\accessToken.php';
+include 'C:\xampp\htdocs\dbconnect.php';
 date_default_timezone_set('Africa/Nairobi');
   $query_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query';
   $BusinessShortCode = '174379';
@@ -126,11 +127,46 @@ date_default_timezone_set('Africa/Nairobi');
     } elseif ($ResultCode == '0') {
       $massage = "0 The transaction is successfully";
       echo "Opening Barrier";
+      
+      $fileContent = file_get_contents("data2.txt");
+      if ($fileContent !== false) {
+    $decodedData = json_decode($fileContent, true);
+    if ($decodedData) {
+    $PhoneNo=$decodedData['PhoneNo'];
+    $parkingNumber=$decodedData['ParkingNumber'];
+    $Fee=$decodedData['Fee'];
+    $Finalquery="update parking_details SET Payment_Status = 'PAID' WHERE Parking_Number= ".$parkingNumber .";";
+    $result10 = $conn->query( $Finalquery );
+      
+      $query1 = "select Time_In FROM Parking_Details WHERE Parking_Number =" .$parkingNumber .";";
+      $result1 = $conn->query( $query1 );
+      $timein1 =$result1->fetch_assoc();
+      $timein=stripslashes( $timein1["Time_In"] );
+      $query2 = "select Time_Out FROM Parking_Details WHERE Parking_Number =" .$parkingNumber .";";
+      $result2 = $conn->query( $query2 );
+      $timeout1 =$result2->fetch_assoc();
+      $timeout=stripslashes( $timeout1["Time_Out"] );
+      $query3 = "select Time_Spent FROM Parking_Details WHERE Parking_Number =" .$parkingNumber .";";
+      $result3 = $conn->query( $query3 );
+      $timespent1 =$result3->fetch_assoc();
+      $timespent=stripslashes( $timespent1["Time_Spent"] );
+      ?> 
+      
+      <?php
+      $query4 = "select Fee FROM Parking_Details WHERE Parking_Number =" .$parkingNumber .";";
+      $result4 = $conn->query( $query4 );
+      $Fee1=$result4->fetch_assoc();
+      $Fee =stripslashes( $Fee1["Fee"] );
+  
+      
+      $CustomerQ="insert into customer_table(Parking_Number, Phone_Number, TimeIn, TimeOut, SPENT,FEE) values ( ".$parkingNumber.", ".$PhoneNo.", '".$timein."', '".$timeout."','".$timespent."',$Fee);";
+      $Stormzy=$conn->query( $CustomerQ );
       echo "<br>";
+      
       ?>
       <form method="post">
       <input type="submit" name="redirect" value="Thanks for Prking With us">
-        </form>
+      </form>
   
   <?php
   if (isset($_POST['redirect'])) {
@@ -145,7 +181,7 @@ date_default_timezone_set('Africa/Nairobi');
   
   
   }
-}
+}}}
 ?>
 <br>
                     

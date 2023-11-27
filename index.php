@@ -112,7 +112,7 @@
                       echo "<br>Unable to read data_log.txt";
                     }
                   }
-                  echo '<meta http-equiv="refresh" content="10">';
+                  echo '<meta http-equiv="refresh" content="30">';
      
                 echo "<br>";
                 
