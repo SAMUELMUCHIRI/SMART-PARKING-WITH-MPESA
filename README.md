@@ -24,13 +24,13 @@ The Components used were
 
 The components use above were incoparate into a pcb .Kicad software was used to design the pcb.
  
-![Geber file](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/test.jpg)
+![Geber file](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/geber%20file.png)
 
-![Schematic ](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/test.jpg)
+![Schematic ](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/Schematic.png)
 
-![Routings](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/test.jpg)
+![Routings](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/routes.png)
 
-![3D view ](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/test.jpg)
+![3D view ](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/3d%20.png)
 
 
 
