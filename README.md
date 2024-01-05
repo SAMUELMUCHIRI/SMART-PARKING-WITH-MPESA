@@ -45,6 +45,10 @@ The components use above were incoparate into a pcb .Kicad software was used to 
 **3D View**
 
 ![3D view ](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/3d%20.png)
+<br>
+**Developed PCB**
+
+![PCB](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/pcb.png)
 
 
 # Hardware Programming
