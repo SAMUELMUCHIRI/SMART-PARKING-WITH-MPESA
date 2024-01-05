@@ -12,7 +12,7 @@ real-world issues.
 - [Database Design](#database-design)
 - [Application Design](#application-design) 
 
-### Hardware Design
+## **Hardware Design**
 The Components used were 
 - NodeMCU ESP8266
 - 5 IR sensors
@@ -51,7 +51,7 @@ The components use above were incoparate into a pcb .Kicad software was used to 
 ![PCB](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/pcb.png)
 
 
-# Hardware Programming
+## **Hardware Programming**
 The sketch Primary operation contains all the code for the hardware .
 The code entail 
 - LCD display
@@ -167,14 +167,125 @@ WiFiClient client;
 - Notify any errors encountered in any operation and how to solve them
 
 
-# Database Design
- Myh SQL was used as the DBMS
+## **Database Design**
+ MySQL was used as the DBMS
 The ER diagram is Shown Below
 ![Erdiagram](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/erdiagram.png)
 
-# Application Design
+## **Application Design**
 The web app was wtitten in php .Queries are sent to the database as the user interacts with the application.
+```php
+
+<?php
+//connction to the Database dbconnect.php
+
+            $host="localhost";
+            $dbname="smart_parking";
+            $username="root";
+            $password= "";
+            $conn=mysqli_connect(hostname: $host,
+                                    username: $username,    
+                                    password: $password , 
+                                    database: $dbname);
+            if(mysqli_connect_errno()){
+                die("Connection Error". mysqli_connect_error());}
+            //echo"Database Online";
+
+?>
+```
  <br>
+
+ ```php
+ //logging in data sent by the NodeMCU to the data_log.txt
+       if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    $data = array(
+                      'sendval1' => $_POST['sendval1'],
+                      'sendval2' => $_POST['sendval2'],
+                      'sendval3' => $_POST['sendval3'],
+                      'sendval4' => $_POST['sendval4']
+                    );
+                  
+                    $jsonContent = json_encode($data, JSON_PRETTY_PRINT);
+                    $logFile = "data_log.txt";
+                    file_put_contents($logFile, $jsonContent);
+                  
+                    echo "Values uploaded successfully to data_log.txt";
+                  }
+ ```
+ <br>
+
+ ```php
+ //storing contents of the log file to Database
+$fileContent = file_get_contents("data_log.txt");
+                    if ($fileContent !== false) {
+                      $decodedData = json_decode($fileContent, true);
+                      if ($decodedData) {
+                        $IR1=$decodedData['sendval1'];
+                        $IR2=$decodedData['sendval2'];
+                        $IR3=$decodedData['sendval3'];
+                        $IR4=$decodedData['sendval4'];
+                     
+
+                        //$sql = "INSERT INTO system_status (IR1, IR2 , IR3 ,IR4 ) VALUES ($IR1 ,$IR2 , $IR2 ,$IR4)";
+                        $sql="UPDATE system_status SET IR1=$IR1,IR2=$IR2,IR3=$IR3,IR4=$IR4" ;
+                    
+                        if ($conn->query($sql) === TRUE) {
+                            echo "<br>";
+        
+                        //echo "Data inserted successfully";
+                        } else {
+                            echo "<br>";
+                        echo "Error: " . $sql . "<br>" . $conn->error;
+                        
+                    }
+                      }
+                    }
+
+ ```
+
+<br>
+
+```php
+//Fetch values from Database 
+                
+                $query1 = "select IR1 FROM system_status ;";
+                $query2 = "select IR2 FROM system_status ;";
+                $query3 = "select IR3 FROM system_status ;";
+                $query4 = "select IR4 FROM system_status ;";
+                $result1 = $conn->query( $query1 );
+                $result2 = $conn->query( $query2 );
+                $result3 = $conn->query( $query3 );
+                $result4 = $conn->query( $query4 );
+                $slot1 =$result1->fetch_assoc();
+                $slot2 =$result2->fetch_assoc();
+                $slot3 =$result3->fetch_assoc();
+                $slot4 =$result4->fetch_assoc();
+```
+```php
+//the following lines of code compare values from current database value to previous database values and assigns either empty or full slot
+                
+                if(stripslashes($slot1['IR1'])== 0){
+                    echo" SLOT 1 : FULL";
+                    if((stripslashes($slot11['IR1'])== 1) and ($IR1==0)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                        $current_date_time=strval($date_time);
+                        $query5="UPDATE parking_details SET Time_In = '$current_date_time'  WHERE Parking_Number =1";
+                        $conn->query($query5);
+
+                    }else{
+                 
+                    }
+                    
+                }else{
+                    echo"SLOT 1 :EMPTY";
+                    if((stripslashes($slot11['IR1'])== 0) and ($IR1==1)){
+                        $date_time = date("Y-m-d H:i:s"); 
+                        $current_date_time=strval($date_time);
+                        $query5="UPDATE parking_details SET Time_Out = '$current_date_time' WHERE Parking_Number =1";
+                        $conn->query($query5);
+                    } else{
+                   }}
+```
  Here's the landing Homepage
 
 ![Webapp](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/webapp.png)
