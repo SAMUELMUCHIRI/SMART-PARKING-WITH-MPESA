@@ -176,5 +176,15 @@ The web app was wtitten in php .Queries are sent to the database as the user int
 ![Webapp](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/webapp.png)
 
 
+<br>
+
+**Payment** as an integral part of the project was realized using the **Daraja API**
+The Client Receives an STK push on the phone an is billed accordingly.The Payment system is able to validate transactions
+the Following files are for payment
+- stkpush.php
+- payment.php
+
+
+
 
 
