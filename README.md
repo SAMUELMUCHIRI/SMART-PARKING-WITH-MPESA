@@ -166,14 +166,14 @@ WiFiClient client;
 # Database Design
  Myh SQL was used as the DBMS
 The ER diagram is Shown Below
-![Erdiagram]()
+![Erdiagram](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/erdiagram.png)
 
 # Application Design
 The web app was wtitten in php .Queries are sent to the database as the user interacts with the application.
  <br>
  Here's the landing Homepage
- 
-![Webapp]()
+
+![Webapp](https://github.com/SAMUELMUCHIRI/SMART-PARKING-WITH-MPESA/blob/main/images/webapp.png)
 
 
 
