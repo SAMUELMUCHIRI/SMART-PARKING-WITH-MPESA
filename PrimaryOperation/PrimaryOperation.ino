@@ -55,26 +55,9 @@ void setup() {
   pinMode(irSensorPin4, INPUT);
   myservo.attach(4);  // attaches the servo on pin 4
   lcd.clear();
-  //configure the mode
-  /*
-  WiFi.mode(WIFI_AP);
-//name for the access point and 8 character password
-  WiFi.softAP("ESP001", "<1-to-9>");
-  lcd.setCursor( 0 ,0);
-  lcd.print("Wifi : ESP001");
-  lcd.setCursor(0, 1);
-  lcd.print("Password : <1-to-9>");
-  delay(2500);
-      while (WiFi.softAPgetStationNum() !=1){ //loop here while no AP is connected to this station
-      //Serial.print(".");
-      delay(100);                           
-      }
-  delay(500);
-  
-  lcd.clear();
-*/
 
-      // Connecting to WiFi...
+
+  // Connecting to WiFi...
   
   WiFi.begin(ssid, password);
   lcd.setCursor(0, 0);
@@ -209,9 +192,7 @@ void setup() {
   {
     OpenBarrier();  
   }
-  //delay(300);
-  //lcd.setCursor(0, 0);
-  //lcd.clear();
+ 
 
 }
 
