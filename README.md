@@ -18,12 +18,13 @@ The Components used were
 - 5 IR sensors
 - 1 servo motor
 - 1 Capacitor
-- Conncting cables
+- Connecting cables
 - Power Sockets
 - Buck Converter
+- Mounting frame
 <br>
 
-The components use above were incoparate into a pcb .Kicad software was used to design the pcb.
+The components use above were incorporated into a Printed Circuit Board(pcb) .Kicad software was used to design the pcb.
 
 
 
