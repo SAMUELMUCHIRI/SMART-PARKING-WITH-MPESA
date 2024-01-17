@@ -294,7 +294,7 @@ $fileContent = file_get_contents("data_log.txt");
 
 <br>
 
-**Payment** as an integral part of the project was realized using the **Daraja API**
+**Payment** as an integral part of the project was realized using the [**DarajaAPI**](https://developer.safaricom.co.ke/)
 The Client Receives an STK push on the phone an is billed accordingly.The Payment system is able to validate transactions
 the Following files are for payment
 - stkpush.php
