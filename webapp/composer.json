@@ -1,0 +1,17 @@
+{
+    "name": "kijanaballer/webapp",
+    "autoload": {
+        "psr-4": {
+            "Kijanaballer\\Webapp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "SAMUELMUCHIRI",
+            "email": "eng.njaumuchiri@gmail.com"
+        }
+    ],
+    "require": {
+        "symfony/dotenv": "^7.3"
+    }
+}
