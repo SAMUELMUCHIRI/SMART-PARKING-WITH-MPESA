@@ -8,7 +8,7 @@ $routes = require "routes.php";
 function abort($code = 404){
     http_response_code($code);
     $heading="$code Error";
-    require "views/$code.php";
+    require "views/errors/$code.php";
     die();
 }
 
